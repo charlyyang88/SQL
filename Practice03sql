@@ -3,11 +3,24 @@
 --직원들의 사번(employee_id), 이름(firt_name), 성(last_name)과 부서명(department_name)을
 --조회하여 부서이름(department_name) 오름차순, 사번(employee_id) 내림차순 으로 정렬하세요.
 --(106건)
-SELECT employee_id, first_name, last_name, department_name
-FROM employees JOIN departments 
-    ON employees.department_id = departments.department_id
-ORDER BY departments.department_name ASC, 
-        employees.employee_id DESC;
+
+-- Simple JOIN
+SELECT emp.employee_id, emp.first_name, emp.last_name, 
+    dept.department_name
+FROM employees emp, departments dept
+WHERE emp.department_id = dept.department_id    --  JOIN 조건
+ORDER BY dept.department_name ASC, 
+        emp.employee_id DESC;
+
+-- ANSI
+-- JOIN의 의도를 명확하게 하고, JOIN 조건과 SELECTION 조건을 분리하는 효과
+SELECT emp.employee_id, emp.first_name, emp.last_name, 
+    dept.department_name
+FROM employees emp  --  중심 테이블
+    JOIN departments dept
+        ON emp.department_id = dept.department_id   --  조인 조건
+ORDER BY dept.department_name ASC, 
+        emp.employee_id DESC;
 
 --문제2.
 --employees 테이블의 job_id는 현재의 업무아이디를 가지고 있습니다.
@@ -15,16 +28,19 @@ ORDER BY departments.department_name ASC,
 --재업무(job_title)를 사번(employee_id) 오름차순 으로 정렬하세요.
 --부서가 없는 Kimberely(사번 178)은 표시하지 않습니다.
 --(106건)
+
+-- Simple JOIN
+SELECT emp.employee_id, emp.first_name, emp.salary, dept.department_name, j.job_title, emp.employee_id
+FROM employees emp, departments dept, jobs j
+WHERE emp.department_id = dept.department_id AND emp.job_id = j.job_id
+ORDER BY emp.employee_id ASC;
+
+-- ANSI JOIN
 SELECT employee_id, first_name, salary, department_name, job_title, employee_id
 FROM employees 
     JOIN jobs ON employees.job_id = jobs.job_id
     JOIN departments ON employees.department_id = departments.department_id
-ORDER BY employees.employee_id ASC, 
-        employees.first_name ASC, 
-        employees.salary ASC, 
-        departments.department_name ASC, 
-        jobs.job_title ASC, 
-        employees.employee_id ASC;
+ORDER BY employees.employee_id ASC;
 
 --문제2-1.
 --문제2에서 부서가 없는 Kimberely(사번 178)까지 표시해 보세요
@@ -33,11 +49,7 @@ SELECT employees.employee_id, employees.first_name, employees.salary, department
 FROM employees 
     JOIN jobs ON employees.job_id = jobs.job_id
     LEFT JOIN departments ON employees.department_id = departments.department_id
-ORDER BY employees.employee_id ASC, 
-        employees.first_name ASC, 
-        employees.salary ASC, 
-        departments.department_name ASC, 
-        jobs.job_title ASC;
+ORDER BY employees.employee_id ASC;
 
 --문제3.
 --도시별로 위치한 부서들을 파악하려고 합니다.
@@ -79,11 +91,11 @@ WHERE emp.hire_date < mng.hire_date;
 --출력하세요.
 --값이 없는 경우 표시하지 않습니다.
 --(27건)
-SELECT country_name, country_id, city, location_id, deparment_name
-FROM countries ctr <<<<<<<<<<<<<<<<<<<
-    JOIN locations ON 
-    JOIN departments ON 
-ORDER BY 부서아이디를 나라명(오름차순
+SELECT ctr.country_name, ctr.country_id, loc.city, loc.location_id, dept.department_name, dept.department_id
+FROM countries ctr
+    JOIN locations loc ON ctr.country_id = loc.country_id
+    JOIN departments dept ON loc.location_id = dept.location_id
+ORDER BY ctr.country_name ASC;
 
 --문제7.
 --job_history 테이블은 과거의 담당업무의 데이터를 가지고 있다.
@@ -91,24 +103,39 @@ ORDER BY 부서아이디를 나라명(오름차순
 --디, 시작일, 종료일을 출력하세요.
 --이름은 first_name과 last_name을 합쳐 출력합니다.
 --(2건)
-SELECT 
-FROM 
-ORDER BY 
+SELECT emp.employee_id, emp.first_name ||' '|| last_name 이름, 
+    jh.job_id, jh.start_date, jh.end_date
+FROM employees emp JOIN job_history jh ON emp.employee_id = jh.employee_id
+WHERE jh.job_id = 'AC_ACCOUNT';
 
 --문제8.
 --각 부서(department)에 대해서 부서번호(department_id), 부서이름(department_name), 
 --매니저(manager)의 이름(first_name), 위치(locations)한 도시(city), 나라(countries)의 이름
 --(countries_name) 그리고 지역구분(regions)의 이름(resion_name)까지 전부 출력해 보세요.
 --(11건)
-SELECT 
-FROM 
-ORDER BY 
+SELECT dept.department_id, dept.department_name, 
+    mng.first_name, 
+    loc.city, 
+    ctr.country_name, 
+    reg.region_name
+FROM departments dept
+    JOIN employees mng ON dept.manager_id = mng.employee_id
+    JOIN locations loc ON dept.location_id = loc.location_id
+    JOIN countries ctr ON loc.country_id = ctr.country_id
+    JOIN regions reg ON ctr.region_id = reg.region_id
+ORDER BY dept.department_id;
 
 --문제9.
 --각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 부서명
 --(department_name), 매니저(manager)의 이름(first_name)을 조회하세요.
 --부서가 없는 직원(Kimberely)도 표시합니다.
 --(106명)
-SELECT 
-FROM 
-ORDER BY 
+SELECT emp.employee_id, 
+    emp.first_name, 
+    dept.department_name,
+    mng.first_name
+FROM employees emp
+    LEFT OUTER JOIN departments dept
+        ON emp.department_id = dept.department_id
+    JOIN employees mng
+        ON emp.manager_id = mng.employee_id;
