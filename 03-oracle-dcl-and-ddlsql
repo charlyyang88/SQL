@@ -98,24 +98,3 @@ DROP TABLE emp_it;
 SELECT * FROM tabs;
 
 DESC book;
-
-/*
-CREATE TABLE himedia_massage (
-    기본가격_45분 NUMBER (8)
-    노콘 NUMBER(2), << 초박형 001 사가미
-    질사 NUMBER(3), <<
-    입사 NUMBER(2), <
-    얼사 NUMBER(2), <
-    69 NUMBER(2), < 
-    역립 NUMBER(2), <
-    관전 NUMBER(1),
-    스타킹 NUMBER(0),
-    딜도 NUMBER(2), < 
-    코스튬 NUMBER(2),
-    지명 NUMBER(2),
-    애널 NUMBER(3), < 관약근 잘쪼으면
-    BJ NUMBER(2), <
-    HJ NUMBER(1),
-    2샷 NUMBER(4) <<<<<<<<<<    
-);
-*/
