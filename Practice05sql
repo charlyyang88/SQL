@@ -49,32 +49,72 @@ SELECT
     MAX(salary)
 FROM employees
 WHERE hire_date >= TO_DATE('2015-01-01', 'YYYY-MM-DD')
+    AND employee_id IN (SELECT DISTINCT manager_id FROM employees)
 GROUP BY manager_id, first_name, hire_date
 HAVING AVG(salary) >= 5000
 ORDER BY AVG(salary) DESC;
-
 
 --문제4.
 --각 사원(employee)에 대해서 사번(employee_id), 이름(first_name), 부서명
 --(department_name), 매니저(manager)의 이름(first_name)을 조회하세요.
 --부서가 없는 직원(Kimberely)도 표시합니다.
---(106명)
+--(106명) >>>> 107건??
+SELECT 
+    emp.employee_id,
+    emp.first_name,
+    dept.department_name,
+    mgr.first_name AS manager_name
+FROM 
+    employees emp
+LEFT JOIN 
+    departments dept ON emp.department_id = dept.department_id
+LEFT JOIN 
+    employees mgr ON emp.manager_id = mgr.employee_id
+ORDER BY 
+    emp.employee_id;
 
+select * from employees;
 
 --문제5.
 --2015년 이후 입사한 직원 중에 입사일이 11번째에서 20번째의 직원의
 --사번, 이름, 부서명, 급여, 입사일을 입사일 순서로 출력하세요
+SELECT RANK, employee_id, first_name, department_id, salary, hire_date
+FROM (SELECT employee_id, first_name, department_id, salary, hire_date,
+        RANK() OVER (ORDER BY hire_date ASC) AS rank
+        FROM employees) 
+WHERE rank BETWEEN 11 AND 20;
 
 
 --문제6.
 --가장 늦게 입사한 직원의 이름(first_name last_name)과 연봉(salary)과 근무하는 부서 이름
 --(department_name)은?
+SELECT
+    first_name || ' ' || last_name AS 이름,
+    salary AS 연봉,
+    dept.department_name AS 부서명
+FROM 
+    employees emp
+    JOIN departments dept ON emp.department_id = dept.department_id
+WHERE 
+    hire_date = (SELECT MAX(hire_date) FROM employees);
 
 
 --문제7.
 --평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 이름(firt_name), 성
 --(last_name)과 업무(job_title), 연봉(salary)을 조회하시오.
-
+SELECT
+    employee_id AS 직원번호,
+    first_name AS 이름,
+    last_name AS 성,
+    job_title AS 업무,
+    salary AS 연봉
+FROM 
+    employees emp
+    JOIN jobs j ON emp.job_id = j.job_id
+WHERE 
+    salary > (SELECT AVG(salary)
+              FROM employees
+              WHERE job_id = j.job_id);
 
 --문제8.
 --평균 급여(salary)가 가장 높은 부서는? 
